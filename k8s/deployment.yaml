@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: server-demo
+  name: prometheus-example-app
   namespace: default
 spec:
   replicas: 2
@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: back-end
-          image: 775956577581.dkr.ecr.us-west-1.amazonaws.com/hello-repository:latest
+          image: docker.io/library/prometheus-example-app
           ports:
-            - containerPort: 80
+            - containerPort: 2112

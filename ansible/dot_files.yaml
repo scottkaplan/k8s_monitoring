@@ -1,0 +1,26 @@
+- name: Install dot files
+  hosts: localhost
+  vars:
+    home_dir: /home/ec2-user
+    github_url: https://raw.githubusercontent.com/scottkaplan/k8s_monitoring/main/dot_files
+  tasks:
+    - name: Create the .aws directory if it does not exist
+      ansible.builtin.file:
+        path: "{{ home_dir }}/.aws"
+        state: directory
+        owner: ec2-user
+        group: ec2-user
+        mode: 0755
+
+    - name: Install the dot files
+      uri:
+        url: "{{ github_url }}/{{ item }}"
+        dest: "{{ home_dir }}/{{ item }}"
+        owner: ec2-user
+        group: ec2-user
+        mode: 0644
+      loop:
+        - '.aws/config'
+        - '.emacs'
+        - '.git-credentials'
+        - '.gitconfig'

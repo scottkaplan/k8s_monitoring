@@ -101,6 +101,8 @@ resource "aws_instance" "firefly-prometheus" {
 
   provisioner "remote-exec" {
     inline = [
+      "/usr/bin/wget -O /tmp/config_bastion.sh https://raw.githubusercontent.com/scottkaplan/k8s_monitoring/main/ansible/config_bastion.sh",
+      "/bin/bash /tmp/config_bastion.sh",
       "sudo mkdir --mode 777 /home/ec2-user/.aws",
     ]
   }
@@ -121,3 +123,12 @@ resource "aws_instance" "firefly-prometheus" {
 resource "aws_eip" "firefly-prometheus" {
   instance = aws_instance.firefly-prometheus.id
 }
+
+resource "aws_route53_record" "firefly-prometheus" {
+  zone_id = data.aws_route53_zone.kaplans.zone_id
+  name    = "firefly-prometheus.kaplans.com"
+  type    = "CNAME"
+  ttl     = 300
+  records = [aws_eip.firefly-prometheus.id]
+}
+
