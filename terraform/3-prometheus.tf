@@ -118,11 +118,16 @@ resource "aws_instance" "firefly-prometheus" {
       "sudo usermod -aG docker ec2-user",
       "aws eks update-kubeconfig --region us-west-1 --name demo",
       "git clone https://github.com/kubesphere/prometheus-example-app.git",
-      "cd prometheus-example-app; sudo docker build -t prometheus-example-app .",
+      "cd /home/ec2-user/prometheus-example-app; sudo docker build -t prometheus-example-app .",
       "aws ecr get-login-password --region us-west-1 | sudo docker login --username AWS --password-stdin 775956577581.dkr.ecr.us-west-1.amazonaws.com",
       "sudo docker tag prometheus-example-app:latest 775956577581.dkr.ecr.us-west-1.amazonaws.com/prometheus-example-app:latest",
       "sudo docker push 775956577581.dkr.ecr.us-west-1.amazonaws.com/prometheus-example-app:latest",
-      "cd $HOME; git clone https://github.com/scottkaplan/k8s_monitoring.git",
+      "cd /home/ec2-user; git clone https://github.com/scottkaplan/k8s_monitoring.git",
+      "/usr/local/bin/kubectl create -f /home/ec2-user/k8s_monitoring/deployment.yaml",
+      "/usr/local/bin/kubectl create -f /home/ec2-user/k8s_monitoring/prometheus.yaml",
+      "mkdir /home/ec2-user/prometheus-operator",
+      "curl -sL https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml -o /home/ec2-user/prometheus-operator/bundle.yaml",
+      "/usr/local/bin/kubectl create -f /home/ec2-user/prometheus-operator/bundle.yaml",
     ]
   }
 }
@@ -138,7 +143,7 @@ data "aws_route53_zone" "kaplans" {
 resource "aws_route53_record" "firefly-prometheus" {
   zone_id = data.aws_route53_zone.kaplans.zone_id
   name    = "firefly-prometheus.kaplans.com"
-  type    = "CNAME"
+  type    = "A"
   ttl     = 300
   records = [aws_eip.firefly-prometheus.public_ip]
 }
