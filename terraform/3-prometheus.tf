@@ -120,19 +120,22 @@ resource "aws_instance" "firefly-prometheus" {
       "aws eks update-kubeconfig --region us-west-1 --name demo",
       "aws ecr get-login-password --region us-west-1 | sudo docker login --username AWS --password-stdin 775956577581.dkr.ecr.us-west-1.amazonaws.com",
 
-      // Build the container for the service and push to ECR
+      // Build the container for the service
       "git clone https://github.com/kubesphere/prometheus-example-app.git",
       "cd /home/ec2-user/prometheus-example-app; sudo docker build -t prometheus-example-app .",
+
+      // push to ECR
       "sudo docker tag prometheus-example-app:latest 775956577581.dkr.ecr.us-west-1.amazonaws.com/prometheus-example-app:latest",
       "sudo docker push 775956577581.dkr.ecr.us-west-1.amazonaws.com/prometheus-example-app:latest",
+
+      // Deploy container from ECR to k8s
+      "cd /home/ec2-user; git clone https://github.com/scottkaplan/k8s_monitoring.git",
+      "/usr/local/bin/kubectl apply -f /home/ec2-user/k8s_monitoring/k8s/deployment.yaml",
 
       // Install the prometheus operator
       "mkdir /home/ec2-user/prometheus-operator",
       "curl -sL https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml -o /home/ec2-user/prometheus-operator/bundle.yaml",
-      "/usr/local/bin/kubectl create -f /home/ec2-user/prometheus-operator/bundle.yaml",
-
-      "cd /home/ec2-user; git clone https://github.com/scottkaplan/k8s_monitoring.git",
-      "/usr/local/bin/kubectl apply -f /home/ec2-user/k8s_monitoring/k8s/deployment.yaml",
+      "/usr/local/bin/kubectl apply -f /home/ec2-user/prometheus-operator/bundle.yaml",
       "/usr/local/bin/kubectl apply -f /home/ec2-user/k8s_monitoring/k8s/prometheus.yaml",
     ]
   }
