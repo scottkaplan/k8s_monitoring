@@ -11,7 +11,11 @@ for f in packages dot_files kubectl docker; do
     sudo ansible-playbook /tmp/ansible/${f}.yaml
 done
 
+mv /tmp/credentials /home/ec2-user/.aws/
+chmod 400 /home/ec2-user/.aws/credentials
+
 sudo usermod -aG docker ec2-user
+
 # AWS authentication
 aws eks update-kubeconfig --region us-west-1 --name demo
 aws ecr get-login-password --region us-west-1 | sudo docker login --username AWS --password-stdin 775956577581.dkr.ecr.us-west-1.amazonaws.com
@@ -33,3 +37,5 @@ mkdir /home/ec2-user/prometheus-operator
 curl -sL https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml -o /home/ec2-user/prometheus-operator/bundle.yaml
 /usr/local/bin/kubectl apply --server-side --force-conflicts -f /home/ec2-user/prometheus-operator/bundle.yaml
 /usr/local/bin/kubectl apply -f /home/ec2-user/k8s_monitoring/k8s/prometheus.yaml
+
+exit 0

@@ -99,21 +99,15 @@ resource "aws_instance" "firefly-prometheus" {
     agent = true
   }
 
+  provisioner "file" {
+    source = local.aws_credentials_filename
+    destination = "/tmp/credentials"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "/usr/bin/wget -O /tmp/config_prometheus.sh https://raw.githubusercontent.com/scottkaplan/k8s_monitoring/main/ansible/config_prometheus.sh",
       "/bin/bash /tmp/config_prometheus.sh",
-    ]
-  }
-
-  provisioner "file" {
-    source = local.aws_credentials_filename
-    destination = "/home/ec2-user/.aws/credentials"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo chmod 400 /home/ec2-user/.aws/credentials",
     ]
   }
 }
