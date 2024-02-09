@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus-example-app
-  namespace: default
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: web
+      app: prometheus-example-app
   template:
     metadata:
       labels:
-        app: web
+        app: prometheus-example-app
     spec:
       containers:
         - name: back-end
           image: 775956577581.dkr.ecr.us-west-1.amazonaws.com/prometheus-example-app:latest
           ports:
-            - containerPort: 2112
+            - name: prometheus
+              containerPort: 2112

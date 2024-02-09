@@ -2,11 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: prometheus-example-app
+  labels:
+    app: prometheus-example-app
 spec:
   selector:
     app: prometheus-example-app
   ports:
-    - port: 2112
+    - name: prometheus
+      port: 2112
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -19,7 +22,7 @@ spec:
     matchLabels:
       app: prometheus-example-app
   endpoints:
-  - port: "2112"
+  - port: prometheus
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
@@ -38,13 +41,21 @@ apiVersion: v1
 kind: Service
 metadata:
   name: prometheus
+  annotations:
+    # Routing
+    service.beta.kubernetes.io/aws-load-balancer-name: demo
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+
+    # Access Control
+    service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+
 spec:
-  type: NodePort
-  ports:
-  - name: web
-    nodePort: 30900
-    port: 9090
-    protocol: TCP
-    targetPort: web
+  type: LoadBalancer
   selector:
     prometheus: prometheus
+  ports:
+    - port: 9090
+      targetPort: 9090
+    

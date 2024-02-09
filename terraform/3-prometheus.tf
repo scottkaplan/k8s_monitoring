@@ -135,7 +135,7 @@ resource "aws_instance" "firefly-prometheus" {
       // Install the prometheus operator
       "mkdir /home/ec2-user/prometheus-operator",
       "curl -sL https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml -o /home/ec2-user/prometheus-operator/bundle.yaml",
-      "/usr/local/bin/kubectl apply -f /home/ec2-user/prometheus-operator/bundle.yaml",
+      "/usr/local/bin/kubectl apply --server-side --force-conflicts -f /home/ec2-user/prometheus-operator/bundle.yaml",
       "/usr/local/bin/kubectl apply -f /home/ec2-user/k8s_monitoring/k8s/prometheus.yaml",
     ]
   }
