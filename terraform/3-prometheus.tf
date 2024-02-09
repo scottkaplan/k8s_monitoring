@@ -101,8 +101,8 @@ resource "aws_instance" "firefly-prometheus" {
 
   provisioner "remote-exec" {
     inline = [
-      "/usr/bin/wget -O /tmp/config_bastion.sh https://raw.githubusercontent.com/scottkaplan/k8s_monitoring/main/ansible/config_bastion.sh",
-      "/bin/bash /tmp/config_bastion.sh",
+      "/usr/bin/wget -O /tmp/config_prometheus.sh https://raw.githubusercontent.com/scottkaplan/k8s_monitoring/main/ansible/config_prometheus.sh",
+      "/bin/bash /tmp/config_prometheus.sh",
     ]
   }
 
