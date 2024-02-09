@@ -19,7 +19,7 @@ spec:
     matchLabels:
       app: prometheus-example-app
   endpoints:
-  - port: 2112
+  - port: "2112"
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
