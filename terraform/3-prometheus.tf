@@ -103,7 +103,6 @@ resource "aws_instance" "firefly-prometheus" {
     inline = [
       "/usr/bin/wget -O /tmp/config_bastion.sh https://raw.githubusercontent.com/scottkaplan/k8s_monitoring/main/ansible/config_bastion.sh",
       "/bin/bash /tmp/config_bastion.sh",
-      "sudo mkdir --mode 777 /home/ec2-user/.aws",
     ]
   }
 
@@ -116,6 +115,14 @@ resource "aws_instance" "firefly-prometheus" {
     inline = [
       "sudo chmod 400 /home/ec2-user/.aws/credentials",
       "sudo chmod 755 /home/ec2-user/.aws",
+      "sudo usermod -aG docker ec2-user",
+      "aws eks update-kubeconfig --region us-west-1 --name demo",
+      "git clone https://github.com/kubesphere/prometheus-example-app.git",
+      "cd prometheus-example-app; sudo docker build -t prometheus-example-app .",
+      "aws ecr get-login-password --region us-west-1 | sudo docker login --username AWS --password-stdin 775956577581.dkr.ecr.us-west-1.amazonaws.com",
+      "sudo docker tag prometheus-example-app:latest 775956577581.dkr.ecr.us-west-1.amazonaws.com/prometheus-example-app:latest",
+      "sudo docker push 775956577581.dkr.ecr.us-west-1.amazonaws.com/prometheus-example-app:latest",
+      "cd $HOME; git clone https://github.com/scottkaplan/k8s_monitoring.git",
     ]
   }
 }
@@ -124,11 +131,15 @@ resource "aws_eip" "firefly-prometheus" {
   instance = aws_instance.firefly-prometheus.id
 }
 
+data "aws_route53_zone" "kaplans" {
+  name = "kaplans.com"
+}
+
 resource "aws_route53_record" "firefly-prometheus" {
   zone_id = data.aws_route53_zone.kaplans.zone_id
   name    = "firefly-prometheus.kaplans.com"
   type    = "CNAME"
   ttl     = 300
-  records = [aws_eip.firefly-prometheus.id]
+  records = [aws_eip.firefly-prometheus.public_ip]
 }
 

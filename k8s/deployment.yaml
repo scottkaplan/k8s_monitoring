@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: back-end
-          image: docker.io/library/prometheus-example-app
+          image: 775956577581.dkr.ecr.us-west-1.amazonaws.com/prometheus-example-app:latest
           ports:
             - containerPort: 2112
