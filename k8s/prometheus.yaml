@@ -16,7 +16,7 @@ kind: ServiceMonitor
 metadata:
   name: prometheus-example-app
   labels:
-    env: prod
+    app: prometheus-example-app
 spec:
   selector:
     matchLabels:
@@ -31,7 +31,7 @@ metadata:
 spec:
   serviceMonitorSelector:
     matchLabels:
-      env: prod
+      app: prometheus-example-app
   resources:
     requests:
       memory: 400Mi
