@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exec >/tmp/config_prometheus.out 2>/tmp/config_prometheus.err
+exec >>/tmp/config_prometheus.out 2>>/tmp/config_prometheus.err
 
 set -x
 
@@ -58,6 +58,7 @@ kubectl=/usr/local/bin/kubectl
 prometheus_operator_yaml=https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
 ansible_yaml_dir=https://raw.githubusercontent.com/scottkaplan/k8s_monitoring/main/ansible
 
+date
 run_playbooks
 docker_non_root
 aws_credentials
@@ -66,5 +67,6 @@ build_container
 push_container_to_ecr
 deploy_ecr_to_k8s
 install_prometheus_operator
+date
 
 exit 0
