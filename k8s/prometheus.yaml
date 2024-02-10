@@ -29,6 +29,7 @@ kind: Prometheus
 metadata:
   name: prometheus
 spec:
+  serviceAccountName: prometheus
   serviceMonitorSelector:
     matchLabels:
       app: prometheus-example-app
