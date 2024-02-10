@@ -30,6 +30,16 @@ metadata:
   name: prometheus
 spec:
   serviceAccountName: prometheus
+  replicas: 2
+  alerting:
+    alertmanagers:
+    - namespace: default
+      name: alertmanager-service
+      port: web
+  ruleSelector:
+    matchLabels:
+      role: alert-rules
+      prometheus: example
   serviceMonitorSelector:
     matchLabels:
       app: prometheus-example-app
