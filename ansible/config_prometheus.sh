@@ -8,7 +8,7 @@ function run_playbooks {
     sudo /usr/bin/yum -y install ansible
     mkdir /tmp/ansible
     for f in packages dot_files kubectl docker; do
-        /usr/bin/wget -O /tmp/ansible/${f}.yaml https://raw.githubusercontent.com/scottkaplan/k8s_monitoring/main/ansible/${f}.yaml
+        /usr/bin/wget -O /tmp/ansible/${f}.yaml $ansible_yaml_dir/${f}.yaml
         sudo ansible-playbook /tmp/ansible/${f}.yaml
     done
 }
@@ -24,8 +24,8 @@ function aws_credentials {
 }
 
 function aws_authentication {
-    aws eks update-kubeconfig --region us-west-1 --name demo
     aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin $ecr_server
+    aws eks update-kubeconfig --region us-west-1 --name demo
 }
 
 function build_container {
@@ -56,6 +56,7 @@ container_name=prometheus-example-app:latest
 base_dir=/home/ec2-user
 kubectl=/usr/local/bin/kubectl
 prometheus_operator_yaml=https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
+ansible_yaml_dir=https://raw.githubusercontent.com/scottkaplan/k8s_monitoring/main/ansible
 
 run_playbooks
 docker_non_root
