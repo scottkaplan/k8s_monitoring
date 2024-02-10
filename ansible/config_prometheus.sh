@@ -13,6 +13,11 @@ function run_playbooks {
     done
 }
 
+function docker_non_root {
+    sudo groupadd docker
+    sudo usermod -aG docker ec2-user
+}
+
 function aws_credentials {
     mv /tmp/credentials /home/ec2-user/.aws/
     chmod 400 /home/ec2-user/.aws/credentials
@@ -45,10 +50,10 @@ function install_prometheus_operator {
     /usr/local/bin/kubectl apply -f /home/ec2-user/k8s_monitoring/k8s/prometheus.yaml
 }
 
-sudo usermod -aG docker ec2-user
-
-aws_authentication
 run_playbooks
+docker_non_root
+aws_credentials
+aws_authentication
 build_container
 push_container_to_ecr
 deploy_ecr_to_k8s
