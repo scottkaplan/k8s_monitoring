@@ -48,6 +48,8 @@ function install_prometheus_operator {
     curl -sL $prometheus_operator_yaml -o $base_dir/prometheus-operator/bundle.yaml
     # prometheus-operator yaml is too big to process on the client
     $kubectl apply --server-side --force-conflicts -f $base_dir/prometheus-operator/bundle.yaml
+    $kubectl apply -f $base_dir/k8s_monitoring/k8s/alertmanager.yaml
+    $kubectl apply -f $base_dir/k8s_monitoring/k8s/rbac.yaml
     $kubectl apply -f $base_dir/k8s_monitoring/k8s/prometheus.yaml
 }
 
