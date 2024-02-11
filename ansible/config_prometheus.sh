@@ -24,6 +24,9 @@ function aws_credentials {
 }
 
 function aws_authentication {
+    // wait for the cluster to come up or auth will fail
+    sleep 300
+    
     aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin $ecr_server
     aws eks update-kubeconfig --region us-west-1 --name demo
 }
