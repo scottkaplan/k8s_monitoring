@@ -27,18 +27,18 @@ function aws_authentication {
     // wait for the cluster to come up or auth will fail
     sleep 300
     
-    aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin $ecr_server
+    aws ecr get-login-password --region us-west-1 | sudo docker login --username AWS --password-stdin $ecr_server
     aws eks update-kubeconfig --region us-west-1 --name demo
 }
 
 function build_container {
     git clone https://github.com/kubesphere/prometheus-example-app.git
-    cd $base_dir/prometheus-example-app; docker build -t prometheus-example-app .
+    cd $base_dir/prometheus-example-app; sudo docker build -t prometheus-example-app .
 }
 
 function push_container_to_ecr {
-    docker tag $container_name $ecr_server/$container_name
-    docker push $ecr_server/$container_name
+    sudo docker tag $container_name $ecr_server/$container_name
+    sudo docker push $ecr_server/$container_name
 }
 
 function deploy_ecr_to_k8s {
