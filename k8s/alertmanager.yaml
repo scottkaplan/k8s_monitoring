@@ -8,20 +8,6 @@ spec:
     matchLabels:
       alertmanagerConfig: example
 ---
-apiVersion: monitoring.coreos.com/v1alpha1
-kind: AlertmanagerConfig
-metadata:
-  name: config-example
-  labels:
-    alertmanagerConfig: example
-spec:
-  route:
-    receiver: 'email'
-  receivers:
-  - name: 'email'
-    emailConfigs:
-    - to: 'scott@kaplans.com'
----
 apiVersion: v1
 kind: Service
 metadata:
@@ -37,6 +23,26 @@ spec:
   selector:
     alertmanager: example
 ---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: config-example
+  labels:
+    alertmanagerConfig: example
+spec:
+  route:
+    receiver: 'email'
+  receivers:
+  - name: 'email'
+    emailConfigs:
+    - to: 'scott@kaplans.com'
+      from: 'scott@kaplans.com'
+      smarthost: 'email-smtp.us-west-1.amazonaws.com:587'
+      authUsername: 'AKIA3JKU5XUW2A5RGQMF'
+      authPassword:
+        name: aws-ses-secret
+        key: password
+---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
@@ -49,5 +55,5 @@ spec:
   groups:
   - name: ./example.rules
     rules:
-    - alert: ExampleAlert
-      expr: vector(1)
+    - alert: PodAlert
+      expr: count_values("up", up) < 2
